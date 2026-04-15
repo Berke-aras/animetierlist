@@ -15,6 +15,12 @@ const firebaseConfig = {
   messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
   appId: import.meta.env.VITE_FIREBASE_APP_ID
 };
+
+// Yapılandırma kontrolü (Eksik secret varsa uyar)
+if (!firebaseConfig.apiKey) {
+  console.error("Firebase API Key eksik! Lütfen GitHub Secrets ayarlarına eklediğinizden emin olun.");
+}
+
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
