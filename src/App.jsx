@@ -17,8 +17,10 @@ const firebaseConfig = {
 };
 
 // Yapılandırma kontrolü (Eksik secret varsa uyar)
-if (!firebaseConfig.apiKey) {
-  console.error("Firebase API Key eksik'!' Lütfen GitHub Secrets ayarlarına eklediğinizden emin olun.");
+const isConfigMissing = !firebaseConfig.apiKey || firebaseConfig.apiKey === "YOUR_API_KEY";
+if (isConfigMissing) {
+  console.error("❌ Firebase API Key Bulunamadı!");
+  console.info("Lütfen GitHub Repository -> Settings -> Secrets and Variables -> Actions kısmında VITE_FIREBASE_API_KEY ve diğer secret'ların tanımlı olduğundan emin olun.");
 }
 
 const app = initializeApp(firebaseConfig);
