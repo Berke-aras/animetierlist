@@ -1,0 +1,15 @@
+{
+  "rules": {
+    "cursors": {
+      "anime-tier-list-app": {
+        // Herkes diğer imleçleri anlık okuyabilir
+        ".read": "auth != null",
+        
+        "$userId": {
+          // Kullanıcılar SADECE kendi ID'lerine sahip düğüme veri yazabilir
+          ".write": "auth != null && auth.uid == $userId"
+        }
+      }
+    }
+  }
+}

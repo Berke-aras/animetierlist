@@ -1,0 +1,29 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Veritabanına sadece projemize giriş yapmış (Anonim) kişiler erişebilir
+    match /artifacts/anime-tier-list-app/public/data {
+      
+      // Tier listesi verileri (Hangi animenin hangi tier'da olduğu)
+      match /tier_assignments/{animeId} {
+        // Herkes okuyabilir
+        allow read: if request.auth != null;
+        
+        // Sadece güncelleyen kişi olarak kendi ID'sini gönderiyorsa yazabilir
+        allow create, update: if request.auth != null && request.resource.data.updatedBy == request.auth.uid;
+        allow delete: if request.auth != null;
+      }
+
+      // Kullanıcıların canlı imleç verileri
+      match /cursors/{userId} {
+        // Herkes imleç konumlarını okuyabilir
+        allow read: if request.auth != null;
+        
+        // ÖNEMLİ GÜVENLİK: Bir kullanıcı sadece "kendi" userID'sine sahip belgeye imleç pozisyonunu yazabilir (Başkası adına hareket edemez)
+        allow create, update, delete: if request.auth != null && request.auth.uid == userId;
+      }
+    }
+  }
+}
