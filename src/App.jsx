@@ -37,7 +37,7 @@ const ConfigurationError = () => (
         </ul>
       </div>
       <p className="text-xs text-zinc-500 leading-relaxed italic">
-        Not: GitHub Actions üzerinden deploy ediyorsanız; "Settings -> Secrets and Variables -> Actions" kısmında bu isimlerle secret eklediğinizden emin olun.
+        Not: GitHub Actions üzerinden deploy ediyorsanız; "Settings → Secrets and Variables → Actions" kısmında bu isimlerle secret eklediğinizden emin olun.
       </p>
     </div>
   </div>
