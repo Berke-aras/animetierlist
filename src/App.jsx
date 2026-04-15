@@ -29,7 +29,7 @@ const ConfigurationError = () => (
         <X className="bg-red-500 rounded-full p-1 text-white" size={24} />
         Yapılandırma Hatası
       </h2>
-      <p className="text-zinc-400 mb-6">Uygulamanın çalışması için gerekli olan Firebase anahtarları bulunamadı. Lütfen GitHub Secrets ayarlarınızı kontrol edin.</p>
+      <p className="text-zinc-400 mb-6">Uygulamanınn çalışması için gerekli olan Firebase anahtarları bulunamadı. Lütfen GitHub Secrets ayarlarınızı kontrol edin.</p>
       <div className="bg-zinc-950 rounded-lg p-4 mb-6 font-mono text-sm border border-zinc-800">
         <p className="text-red-400 font-bold mb-2">Eksik/Hatalı Anahtarlar:</p>
         <ul className="list-disc list-inside text-zinc-500 space-y-1">
