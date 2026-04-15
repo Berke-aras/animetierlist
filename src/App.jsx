@@ -18,7 +18,7 @@ const firebaseConfig = {
 
 // Yapılandırma kontrolü (Eksik secret varsa uyar)
 if (!firebaseConfig.apiKey) {
-  console.error("Firebase API Key eksik! Lütfen GitHub Secrets ayarlarına eklediğinizden emin olun.");
+  console.error("Firebase API Key eksik'!' Lütfen GitHub Secrets ayarlarına eklediğinizden emin olun.");
 }
 
 const app = initializeApp(firebaseConfig);
@@ -48,17 +48,17 @@ export default function App() {
   const [user, setUser] = useState(null);
   const [username, setUsername] = useState('');
   const [isJoined, setIsJoined] = useState(false);
-  
+
   // Veri Durumları
   const [animes, setAnimes] = useState([]);
   const [assignments, setAssignments] = useState({});
   const [cursors, setCursors] = useState({});
   const [loading, setLoading] = useState(true);
   const [myColor] = useState(getRandomColor());
-  
+
   // Arayüz ve Etkileşim Durumları
-  const [activeAnime, setActiveAnime] = useState(null); 
-  const draggingIdRef = useRef(null); 
+  const [activeAnime, setActiveAnime] = useState(null);
+  const draggingIdRef = useRef(null);
   const [cooldown, setCooldown] = useState(0); // 2 saniyelik ceza sistemi -> aslında koda göre 60sn, vs
   const lockTimerRef = useRef(null); // EKLENDİ: 20 Saniyelik AFK/Trol sayacı
 
@@ -185,7 +185,7 @@ export default function App() {
           color: myColor,
           name: username,
           timestamp: now
-        }).catch(() => {});
+        }).catch(() => { });
         lastUpdate = now;
       }
     };
@@ -201,7 +201,7 @@ export default function App() {
     window.addEventListener('dragover', handleMouseMove);
     window.addEventListener('touchstart', handleTouch);
     window.addEventListener('touchmove', handleTouch);
-    
+
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('dragover', handleMouseMove);
@@ -245,7 +245,7 @@ export default function App() {
       interactingAnimeId: animeId,
       interactionType: type, // 'click', 'drag' veya null
       timestamp: Date.now()
-    }).catch(() => {});
+    }).catch(() => { });
   };
 
   // Bir animenin kilitli olup olmadığını sorgulama
@@ -319,9 +319,9 @@ export default function App() {
     try {
       const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'tier_assignments', animeId.toString());
       await setDoc(docRef, { tier: tierId, updatedBy: user.uid, updatedAt: serverTimestamp() });
-      
+
       clearLockTimer(); // Başarıyla yerleştirdi, trol sayacını durdur
-      setActiveAnime(null); 
+      setActiveAnime(null);
       draggingIdRef.current = null;
       updateInteractionToDB(null, null);
       setCooldown(60); // 1 DAKİKA (60 SANİYE) BEKLEME CEZASI VER
@@ -348,9 +348,9 @@ export default function App() {
             </h1>
             <p className="text-zinc-400 text-sm">Ortak çalışma alanına katılmak için bir isim gir.</p>
           </div>
-          <input 
-            type="text" 
-            placeholder="Kullanıcı Adın" 
+          <input
+            type="text"
+            placeholder="Kullanıcı Adın"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             maxLength={15}
@@ -378,7 +378,7 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-zinc-950 text-white font-sans overflow-x-hidden relative">
-      
+
       {/* 2 SANİYE COOLDOWN UYARISI */}
       {cooldown > 0 && (
         <div className="fixed top-24 left-1/2 -translate-x-1/2 z-[200] bg-red-600 border-2 border-red-400 text-white px-6 py-2 rounded-full font-bold shadow-[0_0_20px_rgba(220,38,38,0.6)] animate-bounce pointer-events-none flex items-center gap-2">
@@ -389,11 +389,11 @@ export default function App() {
 
       {/* TIKLA VE TAŞI MODALI */}
       {activeAnime && (
-        <div 
+        <div
           className="fixed inset-0 z-[100] bg-black/80 flex items-center justify-center p-4 backdrop-blur-sm"
           onClick={closeModal}
         >
-          <div 
+          <div
             className="bg-zinc-900 border border-zinc-700 rounded-2xl p-5 sm:p-6 w-full max-w-[320px] shadow-2xl flex flex-col items-center relative animate-in fade-in zoom-in-95 duration-200"
             onClick={e => e.stopPropagation()}
           >
@@ -402,7 +402,7 @@ export default function App() {
             </button>
             <img src={activeAnime.coverImage.large} alt={activeAnime.title.romaji} className="w-28 h-40 object-cover rounded-lg shadow-lg mb-4 pointer-events-none" />
             <h3 className="text-base sm:text-lg font-bold text-center mb-5 line-clamp-2 leading-tight">{activeAnime.title.romaji}</h3>
-            
+
             <div className="w-full grid grid-cols-2 gap-2 mb-3">
               {TIERS.map(tier => (
                 <button
@@ -415,8 +415,8 @@ export default function App() {
               ))}
             </div>
             <button
-               onClick={() => updateAnimeTier(activeAnime.id, 'pool')}
-               className="w-full bg-zinc-800 hover:bg-zinc-700 text-zinc-300 py-2.5 rounded-lg font-medium text-sm transition-colors mt-1"
+              onClick={() => updateAnimeTier(activeAnime.id, 'pool')}
+              className="w-full bg-zinc-800 hover:bg-zinc-700 text-zinc-300 py-2.5 rounded-lg font-medium text-sm transition-colors mt-1"
             >
               Havuza Geri Gönder
             </button>
@@ -426,18 +426,18 @@ export default function App() {
 
       {/* DİĞER KULLANICILARIN İMLEÇLERİ */}
       {Object.entries(cursors).map(([uid, cursor]) => {
-        const draggedAnime = (cursor.interactingAnimeId && cursor.interactionType === 'drag') 
-          ? animes.find(a => a.id === cursor.interactingAnimeId) 
+        const draggedAnime = (cursor.interactingAnimeId && cursor.interactionType === 'drag')
+          ? animes.find(a => a.id === cursor.interactingAnimeId)
           : null;
-        
+
         return (
-          <div 
+          <div
             key={uid}
             className="absolute z-50 pointer-events-none transition-all duration-300 ease-out flex flex-col items-center"
             style={{ left: `${cursor.x * 100}%`, top: `${cursor.y * 100}%`, transform: 'translate(-12px, -12px)' }}
           >
             {draggedAnime && (
-              <div 
+              <div
                 className="absolute top-6 left-6 shadow-2xl rounded-md overflow-hidden border-[3px] z-10 w-16 h-24 bg-zinc-800"
                 style={{ borderColor: cursor.color, boxShadow: `0 0 20px ${cursor.color}90` }}
               >
@@ -445,7 +445,7 @@ export default function App() {
               </div>
             )}
             <MousePointer2 fill={cursor.color} color={cursor.color} size={24} className="-rotate-12 drop-shadow-lg relative z-20" />
-            <div 
+            <div
               className="mt-1 px-2 py-0.5 rounded text-[11px] font-bold text-white whitespace-nowrap shadow-md relative z-20"
               style={{ backgroundColor: cursor.color }}
             >
@@ -473,12 +473,12 @@ export default function App() {
       </header>
 
       <main className="p-3 sm:p-6 max-w-[1600px] mx-auto flex flex-col gap-6 sm:gap-8 pb-20">
-        
+
         {/* TIER TABLOSU */}
         <div className="flex flex-col gap-2 bg-zinc-900 p-2 sm:p-4 rounded-xl border border-zinc-800 shadow-xl">
           {TIERS.map(tier => (
-            <div 
-              key={tier.id} 
+            <div
+              key={tier.id}
               className="flex min-h-[90px] sm:min-h-[120px] bg-zinc-950/50 rounded-lg overflow-hidden border border-zinc-800/50"
               onDragOver={handleDragOver}
               onDrop={(e) => handleDrop(e, tier.id)}
@@ -488,9 +488,9 @@ export default function App() {
               </div>
               <div className="flex-1 p-2 flex flex-wrap gap-2 items-start content-start">
                 {getAnimesInTier(tier.id).map(anime => (
-                  <AnimeCard 
-                    key={anime.id} 
-                    anime={anime} 
+                  <AnimeCard
+                    key={anime.id}
+                    anime={anime}
                     lockInfo={getLockInfo(anime.id)}
                     onDragStart={handleDragStart}
                     onDragEnd={handleDragEnd}
@@ -503,7 +503,7 @@ export default function App() {
         </div>
 
         {/* HAVUZ */}
-        <div 
+        <div
           className="bg-zinc-900 border border-zinc-800 rounded-xl p-4 shadow-xl min-h-[300px]"
           onDragOver={handleDragOver}
           onDrop={(e) => handleDrop(e, 'pool')}
@@ -514,12 +514,12 @@ export default function App() {
               Kalan: {poolAnimes.length}
             </span>
           </div>
-          
+
           <div className="flex flex-wrap gap-2 sm:gap-3 justify-center sm:justify-start">
             {poolAnimes.map(anime => (
-              <AnimeCard 
-                key={anime.id} 
-                anime={anime} 
+              <AnimeCard
+                key={anime.id}
+                anime={anime}
                 lockInfo={getLockInfo(anime.id)}
                 onDragStart={handleDragStart}
                 onDragEnd={handleDragEnd}
@@ -539,7 +539,7 @@ function AnimeCard({ anime, onDragStart, onDragEnd, onClick, lockInfo }) {
   const isLockedByOther = lockInfo?.isLocked && !lockInfo?.isMe;
 
   return (
-    <div 
+    <div
       draggable={!isLockedByOther}
       onDragStart={(e) => {
         if (isLockedByOther) { e.preventDefault(); return; }
@@ -562,7 +562,7 @@ function AnimeCard({ anime, onDragStart, onDragEnd, onClick, lockInfo }) {
     >
       {/* KİLİT YAPANIN İSMİ (Veya "SENDE" Uyarısı) */}
       {lockInfo && (
-        <div 
+        <div
           className="absolute top-0 inset-x-0 py-0.5 text-[8px] sm:text-[9px] font-black text-white text-center z-10 truncate px-1 shadow-md"
           style={{ backgroundColor: lockInfo.color }}
         >
@@ -570,13 +570,13 @@ function AnimeCard({ anime, onDragStart, onDragEnd, onClick, lockInfo }) {
         </div>
       )}
 
-      <img 
-        src={anime.coverImage.large} 
-        alt={anime.title.romaji} 
+      <img
+        src={anime.coverImage.large}
+        alt={anime.title.romaji}
         className="w-full h-full object-cover select-none pointer-events-none"
         draggable="false"
       />
-      
+
       {/* İsim Tooltip'i */}
       {!lockInfo && (
         <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black via-black/80 to-transparent p-1 pt-4 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
