@@ -16,17 +16,42 @@ const firebaseConfig = {
   appId: import.meta.env.VITE_FIREBASE_APP_ID
 };
 
-// Yapılandırma kontrolü (Eksik secret varsa uyar)
-const isConfigMissing = !firebaseConfig.apiKey || firebaseConfig.apiKey === "YOUR_API_KEY";
-if (isConfigMissing) {
-  console.error("❌ Firebase API Key Bulunamadı!");
-  console.info("Lütfen GitHub Repository -> Settings -> Secrets and Variables -> Actions kısmında VITE_FIREBASE_API_KEY ve diğer secret'ların tanımlı olduğundan emin olun.");
+// Yapılandırma kontrolü
+const requiredKeys = ['apiKey', 'authDomain', 'databaseURL', 'projectId', 'appId'];
+const missingKeys = requiredKeys.filter(key => !firebaseConfig[key] || firebaseConfig[key].includes("YOUR_"));
+
+const ConfigurationError = () => (
+  <div className="flex h-screen items-center justify-center bg-zinc-950 text-white p-6 font-sans">
+    <div className="bg-zinc-900 p-8 rounded-2xl border-2 border-red-500/50 shadow-2xl max-w-lg w-full">
+      <h2 className="text-2xl font-black text-red-500 mb-4 flex items-center gap-2">
+        <X className="bg-red-500 rounded-full p-1 text-white" size={24} />
+        Yapılandırma Hatası
+      </h2>
+      <p className="text-zinc-400 mb-6">Uygulamanın çalışması için gerekli olan Firebase anahtarları bulunamadı. Lütfen GitHub Secrets ayarlarınızı kontrol edin.</p>
+      <div className="bg-zinc-950 rounded-lg p-4 mb-6 font-mono text-sm border border-zinc-800">
+        <p className="text-red-400 font-bold mb-2">Eksik/Hatalı Anahtarlar:</p>
+        <ul className="list-disc list-inside text-zinc-500 space-y-1">
+          {missingKeys.map(key => (
+            <li key={key} className="text-zinc-300">VITE_FIREBASE_{key.replace(/[A-Z]/g, letter => `_${letter}`).toUpperCase()}</li>
+          ))}
+        </ul>
+      </div>
+      <p className="text-xs text-zinc-500 leading-relaxed italic">
+        Not: GitHub Actions üzerinden deploy ediyorsanız; "Settings -> Secrets and Variables -> Actions" kısmında bu isimlerle secret eklediğinizden emin olun.
+      </p>
+    </div>
+  </div>
+);
+
+// Sadece yapılandırma tamsa Firebase'i başlat
+let app, auth, db, rtdb;
+if (missingKeys.length === 0) {
+  app = initializeApp(firebaseConfig);
+  auth = getAuth(app);
+  db = getFirestore(app);
+  rtdb = getDatabase(app);
 }
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
-const rtdb = getDatabase(app);
 const appId = 'anime-tier-list-app';
 
 // Tier Listesi Kategorileri
@@ -46,6 +71,11 @@ const getRandomColor = () => {
 };
 
 export default function App() {
+  // 0. Yapılandırma Hatası Kontrolü
+  if (missingKeys.length > 0) {
+    return <ConfigurationError />;
+  }
+
   // Kullanıcı Durumları
   const [user, setUser] = useState(null);
   const [username, setUsername] = useState('');
