@@ -71,11 +71,6 @@ const getRandomColor = () => {
 };
 
 export default function App() {
-  // 0. Yapılandırma Hatası Kontrolü
-  if (missingKeys.length > 0) {
-    return <ConfigurationError />;
-  }
-
   // Kullanıcı Durumları
   const [user, setUser] = useState(null);
   const [username, setUsername] = useState('');
@@ -87,6 +82,11 @@ export default function App() {
   const [cursors, setCursors] = useState({});
   const [loading, setLoading] = useState(true);
   const [myColor] = useState(getRandomColor());
+
+  // 0. Yapılandırma Hatası Kontrolü (Hook'lardan Sonra!)
+  if (missingKeys.length > 0) {
+    return <ConfigurationError />;
+  }
 
   // Arayüz ve Etkileşim Durumları
   const [activeAnime, setActiveAnime] = useState(null);
@@ -115,6 +115,7 @@ export default function App() {
 
   // 2. Firebase Yetkilendirme
   useEffect(() => {
+    if (!auth) return;
     const initAuth = async () => {
       try {
         await signInAnonymously(auth);
@@ -129,7 +130,7 @@ export default function App() {
 
   // 2.5 Realtime Database Presence (Çıkış yapınca imleci sil)
   useEffect(() => {
-    if (user) {
+    if (user && rtdb) {
       const myCursorRef = ref(rtdb, `cursors/${appId}/${user.uid}`);
       onDisconnect(myCursorRef).remove();
     }
@@ -169,7 +170,7 @@ export default function App() {
 
   // 4. Veritabanı Senkronizasyonu (Tier: Firestore, İmleçler: RTDB)
   useEffect(() => {
-    if (!user || !isJoined) return;
+    if (!user || !isJoined || !db || !rtdb) return;
 
     // Firestore - Tier Listesi
     const assignmentsRef = collection(db, 'artifacts', appId, 'public', 'data', 'tier_assignments');
@@ -204,7 +205,7 @@ export default function App() {
 
   // 5. İmleç Gönderimi
   useEffect(() => {
-    if (!user || !isJoined) return;
+    if (!user || !isJoined || !rtdb) return;
 
     let lastUpdate = 0;
     const handleUpdateLocation = (x, y) => {
@@ -271,7 +272,7 @@ export default function App() {
 
   // -- VERİTABANI ETKİLEŞİM DURUMU GÜNCELLEYİCİ --
   const updateInteractionToDB = (animeId, type) => {
-    if (!user) return;
+    if (!user || !rtdb) return;
     const cursorRef = ref(rtdb, `cursors/${appId}/${user.uid}`);
     update(cursorRef, {
       interactingAnimeId: animeId,
@@ -347,7 +348,7 @@ export default function App() {
 
   // Tier Güncelleme (Ve İşlem Sonrası Cooldown)
   const updateAnimeTier = async (animeId, tierId) => {
-    if (!user || cooldown > 0) return;
+    if (!user || !db || cooldown > 0) return;
     try {
       const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'tier_assignments', animeId.toString());
       await setDoc(docRef, { tier: tierId, updatedBy: user.uid, updatedAt: serverTimestamp() });
